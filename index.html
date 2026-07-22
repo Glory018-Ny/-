@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joyeux anniversaire</title>
+<style>
+  :root{
+    --navy-deep: #0F172A;
+    --navy-petrol: #1E3A5F;
+    --text-main: #F1F5F9;
+    --gold: #FBBF24;
+    --overlay: rgba(15, 23, 42, 0.45);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html, body{
+    height:100%;
+    width:100%;
+    overflow-x:hidden;
+    background: linear-gradient(to top, var(--navy-deep) 0%, var(--navy-petrol) 100%);
+    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: var(--text-main);
+  }
+
+  /* ---------- INTRO ---------- */
+  #intro{
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content:center;
+    background: linear-gradient(to top, var(--navy-deep) 0%, var(--navy-petrol) 100%);
+    transition: opacity 1.2s ease;
+  }
+
+  #intro.fade-out{
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .calendar-icon{
+    font-size: 3.6rem;
+    transform-style: preserve-3d;
+    animation: spinY 3.2s linear infinite;
+    filter: drop-shadow(0 0 18px rgba(251,191,36,0.35));
+  }
+
+  @keyframes spinY{
+    from{ transform: rotateY(0deg); }
+    to{ transform: rotateY(360deg); }
+  }
+
+  .date-row{
+    display:flex;
+    align-items:baseline;
+    gap: 1.4rem;
+    margin-top: 2rem;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .date-num{
+    font-size: 3.2rem;
+    font-weight: 500;
+    color: #94A3B8;
+    transition: all 1.1s ease;
+    letter-spacing: 1px;
+  }
+
+  .date-num.gone{
+    opacity: 0;
+    transform: translateY(-6px) scale(0.9);
+  }
+
+  .date-num.shine{
+    color: var(--gold);
+    transform: scale(1.18);
+    text-shadow: 0 0 22px rgba(251,191,36,0.55);
+  }
+
+  .date-sep{
+    font-size: 1.6rem;
+    color: #64748B;
+    font-weight: 300;
+  }
+
+  .intro-caption{
+    margin-top: 1.6rem;
+    font-size: 0.72rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #7C8CA6;
+    opacity: 0;
+    animation: capIn 1s ease 2.4s forwards;
+  }
+
+  @keyframes capIn{
+    to{ opacity: 1; }
+  }
+
+  /* ---------- STARFIELD ---------- */
+  #stars-wrap{
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .star{
+    position:absolute;
+    border-radius: 50%;
+    animation-name: floatStar;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    will-change: transform;
+  }
+
+  @keyframes floatStar{
+    0%   { transform: translateY(0) translateX(0); }
+    50%  { transform: translateY(-18px) translateX(4px); }
+    100% { transform: translateY(0) translateX(0); }
+  }
+
+  /* ---------- CONTENT ---------- */
+  #stage{
+    position: relative;
+    z-index: 3;
+    min-height: 100vh;
+    display:flex;
+    justify-content:center;
+    padding: 8vh 6vw 12vh;
+  }
+
+  #card{
+    max-width: 620px;
+    width:100%;
+    background: var(--overlay);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(251,191,36,0.12);
+    border-radius: 4px;
+    padding: 3.2rem 2.6rem;
+  }
+
+  .eyebrow{
+    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.85;
+    margin-bottom: 1.4rem;
+    display:block;
+  }
+
+  .greeting{
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2.1rem;
+    font-weight: 500;
+    margin-bottom: 2.2rem;
+    color: var(--text-main);
+  }
+
+  .para{
+    font-size: 1.02rem;
+    line-height: 1.85;
+    font-weight: 300;
+    color: #E2E8F0;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+
+  .para.visible{
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .signature{
+    margin-top: 2.6rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--gold);
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+
+  .signature.visible{
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .divider{
+    width: 42px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+    margin: 2rem 0;
+  }
+
+  .hint{
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.66rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #64748B;
+    z-index: 5;
+    opacity: 0;
+    animation: capIn 1.2s ease 5.5s forwards;
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  @media (max-width: 640px){
+    #card{ padding: 2.4rem 1.6rem; }
+    .greeting{ font-size: 1.7rem; }
+    .para{ font-size: 0.96rem; }
+    .calendar-icon{ font-size: 2.8rem; }
+    .date-num{ font-size: 2.5rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .star{ animation: none !important; }
+    .calendar-icon{ animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="intro">
+  <div class="calendar-icon">📅</div>
+  <div class="date-row">
+    <span class="date-num" id="d14">14</span>
+    <span class="date-sep">→</span>
+    <span class="date-num" id="d22">22</span>
+  </div>
+  <div class="intro-caption">quelques jours de retard, beaucoup de sincérité</div>
+</div>
+
+<div id="stars-wrap"></div>
+
+<div id="stage">
+  <div id="card">
+    <span class="eyebrow">Pour toi, en Italie</span>
+    <h1 class="greeting">Coucou Elie,</h1>
+
+    <p class="para">Je sais que je suis hyper en retard (le 14 juillet, ça commence à dater, je sais...), et pour être totalement honnête, je me sens vraiment nulle parce que j'ai posté pour mon amie mais pas pour toi. Mais s'il te plaît, ne le prends surtout pas comme un signe que tu comptes moins pour moi, c'est tout l'inverse.</p>
+
+    <p class="para">Honnêtement, mon cerveau est un vrai tamis en ce moment, et la date m'est complètement sortie de la tête. Mais cet oubli ne change rien au fait que je suis vraiment contente de t'avoir comme ami, bien au contraire.</p>
+
+    <p class="para">Je repensais à nos débuts, je n'aurais jamais imaginé qu'on deviendrait d'aussi bons amis, et aujourd'hui, je suis vraiment heureuse que ce soit le cas. Tu es quelqu'un de sympa et d'unique, et le simple fait que tu prennes le temps de m'aider à vaincre ma peur des appels, c'est un geste qui compte énormément pour moi. Vraiment, merci.</p>
+
+    <p class="para">J'espère que tout roule pour toi en Italie, que tu vas maîtriser la langue comme un chef et atteindre tous tes objectifs. Surtout, que le Seigneur te protège, te garde, et t'apporte énormément de bien. Je te souhaite des expériences vraiment... wow !</p>
+
+    <div class="divider"></div>
+
+    <p class="para">Encore une fois, un très très joyeux anniversaire, avec toute ma sincérité. On se rattrape vite ?</p>
+
+    <p class="signature">Shekinah</p>
+  </div>
+</div>
+
+<div class="hint">bouge ta souris ou incline ton téléphone</div>
+
+<script>
+  // ---------- INTRO SEQUENCE ----------
+  const d14 = document.getElementById('d14');
+  const d22 = document.getElementById('d22');
+  const intro = document.getElementById('intro');
+
+  setTimeout(() => {
+    d14.classList.add('gone');
+    d22.classList.add('shine');
+  }, 1500);
+
+  setTimeout(() => {
+    intro.classList.add('fade-out');
+  }, 4000);
+
+  // ---------- STARFIELD ----------
+  const starsWrap = document.getElementById('stars-wrap');
+  const STAR_COUNT = 130;
+  const stars = [];
+
+  for(let i=0; i<STAR_COUNT; i++){
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2.2 + 0.8;
+    const isGold = Math.random() < 0.35;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.background = isGold ? '#FBBF24' : '#F1F5F9';
+    star.style.opacity = (Math.random() * 0.5 + 0.35).toFixed(2);
+    const top = Math.random() * 100;
+    const left = Math.random() * 100;
+    star.style.top = top + 'vh';
+    star.style.left = left + 'vw';
+    star.style.animationDuration = (Math.random() * 4 + 3) + 's';
+    star.style.animationDelay = (Math.random() * 4) + 's';
+    starsWrap.appendChild(star);
+    stars.push({ el: star, baseTop: top, baseLeft: left, depth: Math.random() * 0.6 + 0.2 });
+  }
+
+  // ---------- PARALLAX (mouse + gyroscope) ----------
+  let targetX = 0, targetY = 0;
+  let currentX = 0, currentY = 0;
+
+  window.addEventListener('mousemove', (e) => {
+    targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+    targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  window.addEventListener('deviceorientation', (e) => {
+    if(e.gamma === null || e.beta === null) return;
+    targetX = Math.max(-1, Math.min(1, e.gamma / 30));
+    targetY = Math.max(-1, Math.min(1, (e.beta - 40) / 30));
+  });
+
+  function animateParallax(){
+    currentX += (targetX - currentX) * 0.04;
+    currentY += (targetY - currentY) * 0.04;
+
+    stars.forEach(s => {
+      const shift = 14 * s.depth;
+      s.el.style.marginLeft = (currentX * shift) + 'px';
+      s.el.style.marginTop = (currentY * shift) + 'px';
+    });
+
+    requestAnimationFrame(animateParallax);
+  }
+  animateParallax();
+
+  // Request device orientation permission on iOS (needs a user gesture)
+  function requestOrientation(){
+    if (typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission().catch(() => {});
+    }
+  }
+  document.body.addEventListener('touchstart', requestOrientation, { once: true });
+  document.body.addEventListener('click', requestOrientation, { once: true });
+
+  // ---------- TEXT REVEAL ON SCROLL ----------
+  const paras = document.querySelectorAll('.para, .signature');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.2 });
+
+  paras.forEach(p => observer.observe(p));
+</script>
+
+</body>
+</html>
